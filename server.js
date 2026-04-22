@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const crypto = require('crypto');
 
 const app = express();
 app.use(cors());
@@ -13,97 +12,70 @@ app.get('/', (req, res) => {
   res.json({ message: 'Server running' });
 });
 
-// Auth signup
 app.post('/api/auth/signup', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ message: 'Missing fields' });
-
-    // For now, just accept signup (no database)
     res.json({ user: { id: '1', username } });
   } catch (e) {
     res.status(500).json({ message: e.message });
   }
 });
 
-// Auth login
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ message: 'Missing fields' });
-
-    // For now, just accept login (no database)
     res.json({ user: { id: '1', username } });
   } catch (e) {
     res.status(500).json({ message: e.message });
   }
 });
 
-// Get trips
-app.get('/api/trips', async (req, res) => {
-  try {
-    res.json([]);
-  } catch (e) {
-    res.status(500).json({ message: e.message });
-  }
+app.get('/api/trips', (req, res) => {
+  res.json([]);
 });
 
-// Create trip
-app.post('/api/trips', async (req, res) => {
-  try {
-    const { destination } = req.body;
-    res.json({ id: '1', destination, totalAmount: 0 });
-  } catch (e) {
-    res.status(500).json({ message: e.message });
-  }
+app.post('/api/trips', (req, res) => {
+  res.json({ id: '1', destination: req.body.destination, totalAmount: 0 });
 });
 
-// Get expenses
-app.get('/api/expenses', async (req, res) => {
-  try {
-    res.json([]);
-  } catch (e) {
-    res.status(500).json({ message: e.message });
-  }
+app.get('/api/expenses', (req, res) => {
+  res.json([]);
 });
 
-// Create expense
-app.post('/api/expenses', async (req, res) => {
-  try {
-    res.json({ id: '1', amountInTripCurrency: 0 });
-  } catch (e) {
-    res.status(500).json({ message: e.message });
-  }
+app.post('/api/expenses', (req, res) => {
+  res.json({ id: '1' });
 });
 
-// Update expense
-app.put('/api/expenses/:id', async (req, res) => {
-  try {
-    res.json({ id: req.params.id });
-  } catch (e) {
-    res.status(500).json({ message: e.message });
-  }
+app.put('/api/expenses/:id', (req, res) => {
+  res.json({ id: req.params.id });
 });
 
-// Delete expense
-app.delete('/api/expenses/:id', async (req, res) => {
-  try {
-    res.json({ message: 'Deleted' });
-  } catch (e) {
-    res.status(500).json({ message: e.message });
-  }
+app.delete('/api/expenses/:id', (req, res) => {
+  res.json({ message: 'Deleted' });
 });
 
-// Export Excel
-app.get('/api/export/excel', async (req, res) => {
-  try {
-    res.json({ message: 'Export not implemented' });
-  } catch (e) {
-    res.status(500).json({ message: e.message });
-  }
+app.get('/api/export/excel', (req, res) => {
+  res.json({ message: 'Not implemented' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ message: err.message });
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`✅ Server on port ${port}`);
+});
+
+// Handle process errors
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Rejection:', err);
 });
